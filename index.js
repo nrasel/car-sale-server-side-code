@@ -22,6 +22,8 @@ async function run() {
         await client.connect();
         const database = client.db("careSale");
         const carCollection = database.collection("car");
+        const orderCollection = database.collection("orders");
+        const usersCollection = database.collection("users");
 
 
         // get explore page cars
@@ -35,6 +37,29 @@ async function run() {
             const cursor = carCollection.find({})
             const result = await cursor.limit(6).toArray()
             res.send(result)
+        })
+
+        // find single product
+        app.get('/cars/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const result = await carCollection.findOne(query)
+            res.send(result)
+        })
+        // order place
+        app.post('/order', async (req, res) => {
+            const order = req.body
+            const result = await orderCollection.insertOne(order)
+            res.json(result)
+        })
+
+        // post registration info
+        app.post('/users', async (req, res) => {
+            const user = req.body
+            console.log(user)
+            const result = await usersCollection.insertOne(user)
+            console.log(result)
+            res.json(result)
         })
 
 
