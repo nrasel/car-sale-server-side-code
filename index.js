@@ -24,6 +24,7 @@ async function run() {
         const carCollection = database.collection("car");
         const orderCollection = database.collection("orders");
         const usersCollection = database.collection("users");
+        const reviewCollection = database.collection("review");
 
 
         // get explore page cars
@@ -53,16 +54,76 @@ async function run() {
             res.json(result)
         })
 
+        // get orders
+        app.get('/orders', async (req, res) => {
+            const cursor = orderCollection.find({})
+            const order = await cursor.toArray()
+            res.send(order)
+        })
+
         // post registration info
         app.post('/users', async (req, res) => {
             const user = req.body
-            console.log(user)
             const result = await usersCollection.insertOne(user)
             console.log(result)
             res.json(result)
         })
 
-        // delete my order
+        // post review
+        app.post('/review', async (req, res) => {
+            const user = req.body
+            const result = await reviewCollection.insertOne(user)
+            res.json(result)
+        })
+
+        // add product
+        app.post('/product', async (req, res) => {
+            const product = req.body
+            const result = await carCollection.insertOne(product)
+            res.json(result)
+        })
+
+        // make admin
+        app.put('/users/admin', async (req, res) => {
+            const user = req.body
+            const filter = { email: user.email }
+            const updateDoc = {
+                $set: {
+                    role: 'admin'
+                }
+            }
+            const result = await usersCollection.updateOne(filter, updateDoc)
+            res.json(result)
+        })
+
+
+        // get admin
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email
+            const query = { email: email }
+            const user = await usersCollection.findOne(query)
+            let isAdmin = false
+            if (user?.role === 'admin') {
+                isAdmin = true
+            }
+            res.json({ admin: isAdmin })
+        })
+
+        // delete order
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const result = await orderCollection.deleteOne(query)
+            res.json(result)
+        })
+        // manageOrders
+        app.delete('/cars/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const result = await carCollection.deleteOne(query)
+            res.json(result)
+        })
+
 
 
     } finally {
