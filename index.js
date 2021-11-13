@@ -76,6 +76,13 @@ async function run() {
             res.json(result)
         })
 
+        // get review
+        app.get('/reviews', async (req, res) => {
+            const cursor = reviewCollection.find({})
+            const review = await cursor.toArray()
+            res.json(review)
+        })
+
         // add product
         app.post('/product', async (req, res) => {
             const product = req.body
@@ -121,6 +128,19 @@ async function run() {
             const id = req.params.id
             const query = { _id: ObjectId(id) }
             const result = await carCollection.deleteOne(query)
+            res.json(result)
+        })
+
+        // update status
+        app.put('/orders/:id', async (req, res) => {
+            const id = req.params.id
+            const filter = { _id: ObjectId(id) }
+            const updateStatus = {
+                $set: {
+                    status: 'Approved'
+                }
+            }
+            const result = await orderCollection.updateOne(filter, updateStatus)
             res.json(result)
         })
 
