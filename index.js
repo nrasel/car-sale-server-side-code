@@ -137,7 +137,7 @@ async function run() {
             const filter = { _id: ObjectId(id) }
             const updateStatus = {
                 $set: {
-                    status: 'Approved'
+                    status: 'Shipped'
                 }
             }
             const result = await orderCollection.updateOne(filter, updateStatus)
